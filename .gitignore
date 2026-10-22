@@ -18,3 +18,8 @@ coverage/
 
 # macOS
 .DS_Store
+.vercel
+
+.next/
+.vercel/
+work/
