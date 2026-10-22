@@ -23,3 +23,6 @@ coverage/
 .next/
 .vercel/
 work/
+
+# Local Firebase CLI logs
+firebase-debug*.log
