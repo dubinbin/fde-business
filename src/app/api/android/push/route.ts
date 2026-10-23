@@ -1,6 +1,5 @@
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
-import { randomUUID } from 'node:crypto';
 import { smallJson, unsealAndroid } from '@/lib/android-push';
 import { checkOrigin, noStore } from '@/lib/push';
 export const runtime = 'nodejs';
@@ -18,8 +17,11 @@ export async function POST(request: Request) {
     const messageId = await getMessaging(app).send({
       token,
       notification: { title: '收到一条 Android 测试推送', body: '点击通知，选择「是」或「否」。' },
-      data: { screen: 'respond', testId: randomUUID() },
-      android: { priority: 'high', ttl: 3600000, notification: { channelId: 'push_test', icon: 'ic_stat_push' } },
+      android: {
+        priority: 'high',
+        ttl: 3600000,
+        notification: { channelId: 'push_test', icon: 'ic_stat_push', proxy: 'allow' },
+      },
     });
     return Response.json({ message: 'FCM 已接收，请查看 Android 系统通知。', messageId }, { headers: noStore });
   } catch (error) {
