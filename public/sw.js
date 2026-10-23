@@ -1,4 +1,4 @@
-const CACHE = 'push-lab-v2';
+const CACHE = 'push-lab-v3';
 const RESPONSE_PAGE = '/respond.html';
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.add(RESPONSE_PAGE)).then(() => self.skipWaiting()));
@@ -23,9 +23,5 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = new URL(RESPONSE_PAGE, self.location.origin).href;
-  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async clients => {
-    const existing = clients.find(client => client.url === url);
-    if (existing) return existing.focus();
-    return self.clients.openWindow(url);
-  }));
+  event.waitUntil(self.clients.openWindow(url));
 });
