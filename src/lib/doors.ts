@@ -29,5 +29,5 @@ export function authenticated(request: Request) {
   const a = Buffer.from(signature(value)); const b = Buffer.from(parts[2]);
   return a.length === b.length && timingSafeEqual(a, b);
 }
-export function publicDoor(id: string, data: DoorRecord) { return { id, name: doorName(id), bound: !!data.subscription, status: data.status || 'idle', pendingId: data.pendingId || null, updatedAt: data.updatedAt || null }; }
+export function publicDoor(id: string, data: DoorRecord) { const expired = data.status === 'pending' && Date.now() - (data.updatedAt || 0) > 300000; return { id, name: doorName(id), bound: !!data.subscription, status: expired ? 'idle' : data.status || 'idle', pendingId: expired ? null : data.pendingId || null, updatedAt: data.updatedAt || null }; }
 export { validateSubscription };
