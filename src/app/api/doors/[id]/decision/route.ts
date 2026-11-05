@@ -4,7 +4,7 @@ export const runtime = 'nodejs';
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   if (!authenticated(request)) return Response.json({ error: '請先登入' }, { status: 401, headers: noStore });
   try {
-    checkOrigin(request);
+    if (request.headers.has('origin')) checkOrigin(request);
     const { id } = await context.params;
     const { pendingId, decision } = await request.json();
     if (typeof pendingId !== 'string' || !['opened', 'denied'].includes(decision)) throw Error('選擇無效');
