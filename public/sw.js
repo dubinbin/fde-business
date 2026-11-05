@@ -1,4 +1,4 @@
-const CACHE = 'door-demo-v1';
+const CACHE = 'door-demo-v2';
 const RESPONSE_PAGE = '/door';
 self.addEventListener('install', event => {
   event.waitUntil(self.skipWaiting());
@@ -21,5 +21,15 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = new URL(event.notification.data?.url || RESPONSE_PAGE, self.location.origin).href;
-  event.waitUntil(self.clients.openWindow(url));
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const existing = windows.find(client => new URL(client.url).pathname === RESPONSE_PAGE);
+    if (existing) {
+      try {
+        const navigated = await existing.navigate(url);
+        if (navigated) return await navigated.focus();
+      } catch { /* The window may have closed between lookup and navigation. */ }
+    }
+    return self.clients.openWindow(url);
+  })());
 });
